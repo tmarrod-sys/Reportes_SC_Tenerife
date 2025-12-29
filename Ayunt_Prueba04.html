@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reporte de Incidencias v0.4 (Final)</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 30px; background-color: #f0f0f5; }
+        .container { max-width: 450px; margin: auto; padding: 25px; background: white; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; text-align: left; margin-left: 5%; }
+        select, input[type="text"] { width: 90%; padding: 10px; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 15px; }
+        .coords-group { display: flex; justify-content: space-between; width: 90%; margin: 0 auto 15px; }
+        .coords-group input { width: 48%; }
+        button {
+            padding: 12px 25px;
+            font-size: 17px;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 5px;
+            width: 90%;
+        }
+        #gps-button { background-color: #28a745; margin-bottom: 15px; }
+        #photo-button { background-color: #ffc107; color: #333; margin-bottom: 15px; }
+        #report-button { background-color: #dc3545; }
+        #view-button { background-color: #007bff; margin-top: 15px; }
+        #export-button { background-color: #5cb85c; margin-top: 15px; }
+        #clear-button { background-color: #f0ad4e; margin-top: 15px; }
+
+        #photo-preview {
+            max-width: 90%;
+            max-height: 200px;
+            display: block;
+            margin: 15px auto 25px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        #result-message { margin-top: 25px; padding: 15px; background-color: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; color: #0c5460; font-weight: bold; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚨 Reporte de Incidencias</h1>
+       
+        <label for="municipio-select">1. Municipio:</label>
+        <select id="municipio-select">
+            <option value="">-- Elige un municipio --</option>
+            <option value="Adeje">Adeje</option>
+            <option value="Arafo">Arafo</option>
+            <option value="Arico">Arico</option>
+            <option value="Arona">Arona</option>
+            <option value="Buenavista del Norte">Buenavista del Norte</option>
+            <option value="Candelaria">Candelaria</option>
+            <option value="Fasnia">Fasnia</option>
+            <option value="Garachico">Garachico</option>
+            <option value="Granadilla de Abona">Granadilla de Abona</option>
+            <option value="Guía de Isora">Guía de Isora</option>
+            <option value="Güímar">Güímar</option>
+            <option value="Icod de los Vinos">Icod de los Vinos</option>
+            <option value="La Guancha">La Guancha</option>
+            <option value="La Matanza de Acentejo">La Matanza de Acentejo</option>
+            <option value="La Orotava">La Orotava</option>
+            <option value="La Victoria de Acentejo">La Victoria de Acentejo</option>
+            <option value="Los Realejos">Los Realejos</option>
+            <option value="Los Silos">Los Silos</option>
+            <option value="El Rosario">El Rosario</option>
+            <option value="El Sauzal">El Sauzal</option>
+            <option value="San Cristóbal de La Laguna">San Cristóbal de La Laguna</option>
+            <option value="San Juan de la Rambla">San Juan de la Rambla</option>
+            <option value="San Miguel de Abona">San Miguel de Abona</option>
+            <option value="Santa Cruz de Tenerife">Santa Cruz de Tenerife</option>
+            <option value="Santa Úrsula">Santa Úrsula</option>
+            <option value="Santiago del Teide">Santiago del Teide</option>
+            <option value="El Tanque">El Tanque</option>
+            <option value="Tacoronte">Tacoronte</option>
+            <option value="Tegueste">Tegueste</option>
+            <option value="Vilaflor de Chasna">Vilaflor de Chasna</option>
+            <option value="Puerto de la Cruz">Puerto de la Cruz</option>
+        </select>
+       
+        <label for="incidencia-select">2. Tipo de Incidencia:</label>
+        <select id="incidencia-select">
+            <option value="">-- Elige la incidencia --</option>
+            <option value="Fallo de alumbrado público">Fallo de alumbrado público</option>
+            <option value="Contenedor desbordado">Contenedor desbordado</option>
+            <option value="Bache en la carretera">Bache en la carretera</option>
+            <option value="Ramas/Vegetación obstruyendo paso">Ramas/Vegetación obstruyendo paso</option>
+            <option value="Animales sueltos">Animales sueltos</option>
+            <option value="Juego de pelota en zona de baño">Juego de pelota en zona de baño</option>
+            <option value="Cableado eléctrico expuesto">Cableado eléctrico expuesto</option>
+            <option value="Señalización horizontal borrada">Señalización horizontal borrada</option>
+            <option value="Acerado roto/peligroso">Acerado roto/peligroso</option>
+            <option value="Alcantarilla/Arqueta abierta o dañada">Alcantarilla/Arqueta abierta o dañada</option>
+            <option value="Nido de plagas (avispas/roedores)">Nido de plagas (avispas/roedores)</option>
+            <option value="Fuga o escape de agua/Avería">Fuga o escape de agua/Avería</option>
+        </select>
+       
+        <hr style="margin: 25px 0; border-color: #eee;">
+
+        <label>3. Coordenadas GPS:</label>
+        <div class="coords-group">
+            <input type="text" id="latitud-input" placeholder="Latitud" />
+            <input type="text" id="longitud-input" placeholder="Longitud" />
+        </div>
+        <button id="gps-button" onclick="obtenerGeolocalizacion()">📍 Obtener Ubicación Actual</button>
+
+        <hr style="margin: 25px 0; border-color: #eee;">
+
+        <label>4. Evidencia Fotográfica:</label>
+        <input type="file" accept="image/*" capture="environment" id="file-input" style="display: none;" onchange="mostrarPrevisualizacion(event)" disabled>
+        <button id="photo-button" onclick="document.getElementById('file-input').click()" disabled>📸 Tomar/Seleccionar Foto</button>
+        <img id="photo-preview" src="" alt="Previsualización de la foto" style="display: none;">
+
+        <button id="report-button" onclick="generarReporteFinal()">Generar y Guardar Reporte</button>
+        <button onclick="verReportesGuardados()" id="view-button">📋 Ver Historial de Reportes</button>
+        <button onclick="exportarHistorialJSON()" id="export-button">⬇️ Descargar Historial (JSON)</button>
+        <button onclick="borrarHistorial()" id="clear-button">🗑️ Borrar Todo el Historial (Pruebas)</button>
+       
+        <p id="result-message">Esperando tu interacción...</p>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'reportes_incidencias';
+        // NOTA: UMBRAL_GEOGRAFICO eliminado.
+
+        // Mantenemos los centros de municipios si se requieren para futuras integraciones de mapas.
+        const CENTROS_MUNICIPIOS = {
+            "Adeje": {lat: 28.1215, lon: -16.7323},
+            "Arafo": {lat: 28.3142, lon: -16.3533},
+            "Arico": {lat: 28.1561, lon: -16.4258},
+            "Arona": {lat: 28.0934, lon: -16.6800},
+            "Buenavista del Norte": {lat: 28.3742, lon: -16.8450},
+            "Candelaria": {lat: 28.3581, lon: -16.3575},
+            "Fasnia": {lat: 28.2619, lon: -16.4025},
+            "Garachico": {lat: 28.3758, lon: -16.7647},
+            "Granadilla de Abona": {lat: 28.1189, lon: -16.5775},
+            "Guía de Isora": {lat: 28.2256, lon: -16.7725},
+            "Güímar": {lat: 28.3267, lon: -16.3986},
+            "Icod de los Vinos": {lat: 28.3653, lon: -16.7025},
+            "La Guancha": {lat: 28.3672, lon: -16.6347},
+            "La Matanza de Acentejo": {lat: 28.4358, lon: -16.4442},
+            "La Orotava": {lat: 28.3853, lon: -16.5256},
+            "La Victoria de Acentejo": {lat: 28.4367, lon: -16.4253},
+            "Los Realejos": {lat: 28.3542, lon: -16.5894},
+            "Los Silos": {lat: 28.3794, lon: -16.8094},
+            "El Rosario": {lat: 28.4286, lon: -16.3314},
+            "El Sauzal": {lat: 28.4550, lon: -16.3942},
+            "San Cristóbal de La Laguna": {lat: 28.4851, lon: -16.3155},
+            "San Juan de la Rambla": {lat: 28.3800, lon: -16.6714},
+            "San Miguel de Abona": {lat: 28.0678, lon: -16.6367},
+            "Santa Cruz de Tenerife": {lat: 28.4683, lon: -16.2518},
+            "Santa Úrsula": {lat: 28.4319, lon: -16.4950},
+            "Santiago del Teide": {lat: 28.2861, lon: -16.8183},
+            "El Tanque": {lat: 28.3492, lon: -16.7867},
+            "Tacoronte": {lat: 28.4719, lon: -16.3886},
+            "Tegueste": {lat: 28.5147, lon: -16.3400},
+            "Vilaflor de Chasna": {lat: 28.1292, lon: -16.6667},
+            "Puerto de la Cruz": {lat: 28.4167, lon: -16.5500},
+        };
+
+        // NOTA: La función validarCoordenadasMunicipio ha sido eliminada.
+
+        function obtenerGeolocalizacion() {
+            const latInput = document.getElementById('latitud-input');
+            const lonInput = document.getElementById('longitud-input');
+            const photoButton = document.getElementById('photo-button');
+            const fileInput = document.getElementById('file-input');
+           
+            latInput.value = "Obteniendo...";
+            lonInput.value = "Obteniendo...";
+            photoButton.disabled = true;
+            fileInput.disabled = true;
+
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        latInput.value = position.coords.latitude.toFixed(6);
+                        lonInput.value = position.coords.longitude.toFixed(6);
+                        photoButton.disabled = false;
+                        fileInput.disabled = false;
+                        document.getElementById('result-message').innerHTML = "✅ Coordenadas obtenidas. Ahora puedes tomar la foto.";
+                    },
+                    function(error) {
+                        latInput.value = "";
+                        lonInput.value = "";
+                        photoButton.disabled = true;
+                        fileInput.disabled = true;
+                        document.getElementById('result-message').innerHTML = "❌ Error: Permita el acceso al GPS antes de tomar una foto.";
+                    }
+                );
+            } else {
+                document.getElementById('result-message').innerHTML = "❌ Error: Geolocalización no disponible.";
+            }
+        }
+
+        function mostrarPrevisualizacion(event) {
+            const preview = document.getElementById('photo-preview');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+                document.getElementById('result-message').innerHTML = "✅ Foto seleccionada y previsualizada.";
+            } else {
+                preview.style.display = 'none';
+                preview.src = "";
+            }
+        }
+
+        function generarReporteFinal() {
+            const municipio = document.getElementById('municipio-select').value;
+            const incidencia = document.getElementById('incidencia-select').value;
+            const latitud = document.getElementById('latitud-input').value;
+            const longitud = document.getElementById('longitud-input').value;
+            const fotoDataURL = document.getElementById('photo-preview').src;
+            const resultado = document.getElementById('result-message');
+           
+            if (municipio === "" || incidencia === "" || latitud === "" || longitud === "") {
+                resultado.innerHTML = "⚠️ Por favor, rellena todos los campos obligatorios (Municipio, Incidencia, GPS).";
+                return;
+            }
+
+            // NOTA: La validación geográfica ya no se realiza aquí.
+
+            // CREAR OBJETO REPORTE (SOLO GUARDA EL INDICADOR 'Sí'/'No')
+            const nuevoReporte = {
+                id: Date.now(),
+                fecha: new Date().toLocaleString(),
+                municipio: municipio,
+                incidencia: incidencia,
+                latitud: latitud,
+                longitud: longitud,
+                conFoto: (fotoDataURL && fotoDataURL !== window.location.href) ? 'Sí' : 'No',
+            };
+
+            const reportesGuardados = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            reportesGuardados.push(nuevoReporte);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(reportesGuardados));
+           
+            resultado.innerHTML = `
+                ✅ **¡Reporte Guardado con éxito!**<br>
+                Tipo: ${incidencia} en ${municipio}.<br>
+                GPS: ${latitud}, ${longitud}.<br>
+                Foto adjunta: ${nuevoReporte.conFoto}.<br>
+                Total de reportes guardados: ${reportesGuardados.length}.
+            `;
+        }
+
+        function verReportesGuardados() {
+            const reportes = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const resultado = document.getElementById('result-message');
+
+            if (reportes.length === 0) {
+                resultado.innerHTML = "📝 **No hay reportes guardados** en la memoria del navegador.";
+                return;
+            }
+
+            let html = `<h2>📝 Historial de Reportes (${reportes.length}):</h2>`;
+            reportes.forEach((r, index) => {
+                html += `
+                    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 4px;">
+                        <strong>${index + 1}. Reporte (${r.fecha})</strong><br>
+                        Municipio: ${r.municipio}<br>
+                        Incidencia: ${r.incidencia}<br>
+                        Ubicación: ${r.latitud}, ${r.longitud}<br>
+                        Foto: ${r.conFoto}
+                    </div>
+                `;
+            });
+           
+            resultado.innerHTML = html;
+        }
+
+        function exportarHistorialJSON() {
+            const reportesGuardados = localStorage.getItem(STORAGE_KEY);
+           
+            if (!reportesGuardados || reportesGuardados === '[]') {
+                document.getElementById('result-message').innerHTML = "⚠️ No hay reportes guardados para exportar.";
+                return;
+            }
+           
+            const blob = new Blob([reportesGuardados], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+           
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `reportes_incidencias_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+           
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            document.getElementById('result-message').innerHTML = `✅ Historial exportado con éxito como archivo .json.`;
+        }
+
+        function borrarHistorial() {
+            if (confirm("⚠️ ¿Estás seguro de que quieres ELIMINAR TODOS los reportes guardados en la memoria de este navegador? Esta acción es irreversible.")) {
+                localStorage.removeItem(STORAGE_KEY);
+                document.getElementById('result-message').innerHTML = "🗑️ Historial de reportes ELIMINADO. La aplicación está lista para nuevas pruebas.";
+                document.getElementById('photo-preview').style.display = 'none';
+                document.getElementById('photo-preview').src = "";
+            }
+        }
+    </script>
+</body>
+</html>
